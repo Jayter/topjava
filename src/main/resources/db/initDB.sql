@@ -26,11 +26,9 @@ CREATE TABLE user_roles
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE SEQUENCE global_meal_seq START 100;
-
 CREATE TABLE meals
 (
-  id              INTEGER PRIMARY KEY DEFAULT nextval('global_meal_seq'),
+  id              INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
   user_id         INTEGER NOT NULL,
   localDateTime   TIMESTAMP DEFAULT now(),
   description     VARCHAR NOT NULL,
