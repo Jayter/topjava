@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,14 +32,18 @@ public class MealServiceTest {
     @Autowired
     protected MealService service;
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void testDelete() throws Exception {
         service.delete(MealTestData.MEAL1_ID, USER_ID);
         MATCHER.assertCollectionEquals(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2), service.getAll(USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testDeleteNotFound() throws Exception {
+        expectedException.expect(NotFoundException.class);
         service.delete(MEAL1_ID, 1);
     }
 
@@ -54,8 +60,10 @@ public class MealServiceTest {
         MATCHER.assertEquals(ADMIN_MEAL1, actual);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetNotFound() throws Exception {
+        expectedException.expect(NotFoundException.class);
+        expectedException.expectMessage("Not found entity with id: " + MEAL1_ID + " and userId: " + ADMIN_ID);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -66,8 +74,9 @@ public class MealServiceTest {
         MATCHER.assertEquals(updated, service.get(MEAL1_ID, USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testNotFoundUpdate() throws Exception {
+        expectedException.expect(NotFoundException.class);
         Meal item = service.get(MEAL1_ID, USER_ID);
         service.update(item, ADMIN_ID);
     }
