@@ -1,9 +1,15 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.After;
+import org.junit.AssumptionViolatedException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -16,6 +22,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -29,11 +36,22 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(MealServiceTest.class);
+
     @Autowired
     protected MealService service;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
+    public Stopwatch watch = new Stopwatch(){
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            logger.info(description + " execution time: " + (nanos/(1000000)) +" ms");
+            super.succeeded(nanos, description);
+        }
+    };
 
     @Test
     public void testDelete() throws Exception {
